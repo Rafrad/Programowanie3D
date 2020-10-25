@@ -37,6 +37,17 @@ void SimpleShapeApplication::init() {
             0.5f, 0.0f, 0.0f, 0.2f, 1.0f, 0.2f,
     };
 
+    auto u_modifiers_index = glGetUniformBlockIndex(program, "Modifiers"); 
+    if (u_modifiers_index == GL_INVALID_INDEX) { 
+        std::cout << "Cannot find Modifiers uniform block in program" << std::endl;
+    } else {
+        glUniformBlockBinding(program, u_modifiers_index, 0);
+    }
+
+    GLfloat light_intensity = 0.9f;
+    GLfloat light_color[3] = { 0.2f, 0.4f, 0.5f };
+
+
     GLuint idx_buffer_handle;
     glGenBuffers(1,&idx_buffer_handle); 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buffer_handle);
@@ -61,6 +72,15 @@ void SimpleShapeApplication::init() {
     glBindBuffer(GL_ARRAY_BUFFER, v_buffer_handle);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(3*sizeof(GLfloat)));
     glBindVertexArray(0);
+    
+    GLuint ubo_handle(0u);
+    glGenBuffers(1, &ubo_handle);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle);
+    glBufferData(GL_UNIFORM_BUFFER, 8 * sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLfloat), &light_intensity);
+    glBufferSubData(GL_UNIFORM_BUFFER, 4 * sizeof(GLfloat), 3 * sizeof(GLfloat), light_color);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_handle);
 
     glClearColor(0.0f, 0.81f, 0.8f, 1.0f);
     int w, h;
