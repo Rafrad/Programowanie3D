@@ -30,6 +30,8 @@ void SimpleShapeApplication::init() {
             -0.5f, -1.0f, 0.0f,
             0.5f, -1.0f, 0.0f,
             -0.5f, 0.0f, 0.0f,
+            0.5f, -1.0f, 0.0f,
+            -0.5f, 0.0f, 0.0f,
             0.5f, 0.0f, 0.0f,
     };
 
@@ -60,7 +62,6 @@ void SimpleShapeApplication::init() {
 
 void SimpleShapeApplication::frame() {
     glBindVertexArray(vao_);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawArrays(GL_TRIANGLE_STRIP, 3, 4);
+    glDrawArrays(GL_TRIANGLES, 0, 9);
     glBindVertexArray(0);
 }

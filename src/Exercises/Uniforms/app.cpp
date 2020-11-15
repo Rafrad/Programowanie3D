@@ -24,7 +24,7 @@ void SimpleShapeApplication::init() {
     }
 
     std::vector<GLushort> indices = {
-            0,2,1,6,5,4,3 // wypisujemy tyle elementów ile mamy wierzchołków
+            0,2,1,6,5,4,5,4,3 // wypisujemy tyle elementów ile mamy wierzchołków
         };
 
     std::vector<GLfloat> vertices = {
@@ -36,6 +36,7 @@ void SimpleShapeApplication::init() {
             -0.5f, 0.0f, 0.0f, 0.2f, 1.0f, 0.2f,
             0.5f, 0.0f, 0.0f, 0.2f, 1.0f, 0.2f,
     };
+    
 
     auto u_modifiers_index = glGetUniformBlockIndex(program, "Modifiers"); 
     if (u_modifiers_index == GL_INVALID_INDEX) { 
@@ -93,7 +94,7 @@ void SimpleShapeApplication::init() {
 
 void SimpleShapeApplication::frame() {
     glBindVertexArray(vao_);
-    glDrawElements(GL_TRIANGLE_STRIP, 7, GL_UNSIGNED_SHORT, nullptr);
+    glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_SHORT, reinterpret_cast<GLvoid*>(0));
     // glDrawArrays(GL_TRIANGLES, 0, 3);
     // glDrawArrays(GL_TRIANGLE_STRIP, 3, 4);
     glBindVertexArray(0);
