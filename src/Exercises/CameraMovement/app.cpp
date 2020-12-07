@@ -10,6 +10,7 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+
 #include "Application/utils.h"
 
 void SimpleShapeApplication::init() {
@@ -113,25 +114,25 @@ void SimpleShapeApplication::init() {
     int w, h;
     std::tie(w, h) = frame_buffer_size();
 
-    
-    const glm::mat4 M(1.0f);
-    const glm::mat4 v = glm::lookAt(
+    set_camera(new Camera);
+
+    camera_->perspective(
+        glm::half_pi<float>(),
+        (float)w/h,
+        0.1f,
+        100.0f
+    );
+    //camera_->projection();
+    camera_->look_at(
             glm::vec3(1.0f, 2.f, 0.2f),
             glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(0.0f, 1.0f, 0.0f)
     );
-    const glm::mat4 p = glm::perspective(
-            glm::half_pi<float>(), (float)w / (float)h, 0.1f, 100.f);
-
-    glm::mat4 PVM = p*v*M;
     
-    GLuint ubo_handle_mat(0u);
-    glGenBuffers(1, &ubo_handle_mat);
-    glBindBuffer(GL_UNIFORM_BUFFER,ubo_handle_mat);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
-    glBindBuffer(GL_UNIFORM_BUFFER,0);
-    glBindBufferBase(GL_UNIFORM_BUFFER,0,ubo_handle_mat);
+    set_controler(new CameraControler(camera()));
+
+    glGenBuffers(1, &u_pvm_buffer_);
+    glBindBufferBase(GL_UNIFORM_BUFFER,0,u_pvm_buffer_);
 
     glViewport(0, 0, w, h);
     glEnable(GL_DEPTH_TEST);
@@ -144,7 +145,40 @@ void SimpleShapeApplication::init() {
 void SimpleShapeApplication::frame() {
     glBindVertexArray(vao_);
     glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, reinterpret_cast<GLvoid*>(0));
-    // glDrawArrays(GL_TRIANGLES, 0, 3);
-    // glDrawArrays(GL_TRIANGLE_STRIP, 3, 4);
+
     glBindVertexArray(0);
+
+    auto PVM = camera_->projection()*camera_->view();
+    glBindBuffer(GL_UNIFORM_BUFFER,u_pvm_buffer_);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
+    glBindBuffer(GL_UNIFORM_BUFFER,0);
+}
+
+void SimpleShapeApplication::framebuffer_resize_callback(int w, int h) {
+    Application::framebuffer_resize_callback(w, h);
+    glViewport(0,0,w,h);
+    camera_->set_aspect((float)w/h);
+}
+
+void SimpleShapeApplication::mouse_button_callback(int button, int action, int mods) {
+    Application::mouse_button_callback(button, action, mods);
+    if (controler_) {
+        double x, y;
+        glfwGetCursorPos(window_, &x, &y);
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+            controler_->LMB_pressed((float)x, (float)y);
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+            controler_->LMB_released((float)x, (float)y);
+    }
+
+}
+
+void SimpleShapeApplication::cursor_position_callback(double x, double y) {
+    Application::cursor_position_callback(x, y);
+    if (controler_) {
+        controler_->mouse_moved(x, y);
+    }
 }
