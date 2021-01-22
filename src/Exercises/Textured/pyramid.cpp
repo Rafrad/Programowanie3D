@@ -57,5 +57,5 @@ void Pyramid::draw() {
     glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, reinterpret_cast<GLvoid*>(0));
 
     glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE0, NULL);
+    glBindTexture(GL_TEXTURE0, 0);
 }  
