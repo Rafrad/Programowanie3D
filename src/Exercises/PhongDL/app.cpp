@@ -31,7 +31,8 @@ void SimpleShapeApplication::init() {
         glUniformBlockBinding(program, u_matrix_index, 0);
     }
 
-    set_pyramid(std::make_shared<Pyramid>());
+    set_pyramid(new Pyramid);
+    set_quad(new Quad);
 
     glClearColor(0.0f, 0.81f, 0.8f, 1.0f);
     int w, h;
@@ -56,6 +57,8 @@ void SimpleShapeApplication::init() {
 
     glGenBuffers(1, &u_pvm_buffer_);
     glBindBufferBase(GL_UNIFORM_BUFFER,0,u_pvm_buffer_);
+    glBindBuffer(GL_UNIFORM_BUFFER,u_pvm_buffer_);
+    glBufferData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4) + sizeof(glm::mat3), nullptr, GL_STATIC_DRAW);
 
     glViewport(0, 0, w, h);
     glEnable(GL_DEPTH_TEST);
@@ -73,12 +76,17 @@ void SimpleShapeApplication::init() {
 }
 
 void SimpleShapeApplication::frame() {
-    pyramid_->draw();
-
-    auto PVM = camera_->projection()*camera_->view();
-    glBindBuffer(GL_UNIFORM_BUFFER,u_pvm_buffer_);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
+    //pyramid_->draw();
+    quad_->draw();
+    auto P = camera_->projection();
+    auto VM = camera_->view();
+    auto N = glm::transpose(glm::inverse(glm::mat3(VM)));
+    
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &P[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &VM[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4), 3 * sizeof(GLfloat), &N[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4) + 4 * sizeof(GLfloat), 3 * sizeof(GLfloat), &N[1]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4) + 8 * sizeof(GLfloat), 3 * sizeof(GLfloat), &N[2]);
     glBindBuffer(GL_UNIFORM_BUFFER,0);
 }
 
@@ -108,4 +116,9 @@ void SimpleShapeApplication::cursor_position_callback(double x, double y) {
     if (controler_) {
         controler_->mouse_moved(x, y);
     }
+}
+
+void SimpleShapeApplication::cleanup() {
+        delete pyramid_;
+        delete quad_;
 }

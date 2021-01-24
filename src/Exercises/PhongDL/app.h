@@ -16,6 +16,7 @@
 #include "glad/glad.h"
 #include "camera_controler.h"
 #include "pyramid.h"
+#include "quad.h"
 
 class SimpleShapeApplication : public xe::Application {
 public:
@@ -23,6 +24,8 @@ public:
             Application(width, height, title, major, minor) {}
 
     void init() override;
+
+    void cleanup() override;
 
     void frame() override;
 
@@ -50,14 +53,18 @@ public:
     void set_controler(CameraControler *controler) { controler_ = controler; }
     CameraControler *camera_controler() { return controler_; }
 
-    void set_pyramid(std::shared_ptr<Pyramid> pyramid) { pyramid_ = pyramid; }
-    std::shared_ptr<Pyramid> pyramid() { return pyramid_; }
+    void set_pyramid(Pyramid* pyramid) { pyramid_ = pyramid; }
+    Pyramid* pyramid() { return pyramid_; }
+
+    void set_quad(Quad* quad) { quad_ = quad; }
+    Quad* quad() { return quad_; }
 
 private:
     GLuint vao_;
     GLuint u_pvm_buffer_;
 
-    std::shared_ptr<Pyramid> pyramid_;
+    Pyramid* pyramid_;
+    Quad* quad_;
     Camera *camera_;
     CameraControler *controler_;
 };

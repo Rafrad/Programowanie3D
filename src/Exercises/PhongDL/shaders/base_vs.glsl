@@ -2,13 +2,16 @@
 
 layout(location=0) in  vec4 a_vertex_position;
 layout(location=1) in  vec2 a_vertex_texture;
+layout(location=2) in  vec3 a_vertex_normal;
 
 layout(std140) uniform Matrix {
-    mat4 PVM;
+    mat4 P;
+    mat4 VM;
+    mat3 N;
 };
 out vec2 vertex_texture;
 
 void main() {
-    gl_Position = PVM*a_vertex_position;
+    gl_Position = P*VM*a_vertex_position;
     vertex_texture = a_vertex_texture;
 }
