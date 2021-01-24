@@ -63,9 +63,9 @@ void SimpleShapeApplication::init() {
     set_controler(new CameraControler(camera()));
 
     set_light(
-        glm::vec4(0.0f, 0.5f, 0.0f, 1.0f),
+        glm::vec4(),
         glm::vec4(1.0f, 1.0f, 1.0f, 0.0f),
-        glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)
+        glm::vec4()
     );
 
     glGenBuffers(1, &u_pvm_buffer_);
@@ -95,11 +95,11 @@ void SimpleShapeApplication::init() {
 
 void SimpleShapeApplication::frame() {
     //pyramid_->draw();
-    quad_->draw();
     auto P = camera_->projection();
     auto VM = camera_->view();
     auto N = glm::transpose(glm::inverse(glm::mat3(VM)));
-    
+    light_.position = VM * glm::vec4 (0.0f, 0.5f, 0.0f, 1.0f);
+
     glBindBuffer(GL_UNIFORM_BUFFER,u_pvm_buffer_);
     glBufferSubData(GL_UNIFORM_BUFFER, 0,                                         sizeof(glm::mat4),   &P[0]);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4),                         sizeof(glm::mat4),   &VM[0]);
@@ -108,6 +108,7 @@ void SimpleShapeApplication::frame() {
     glBufferSubData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4) + 8 * sizeof(GLfloat), 3 * sizeof(GLfloat), &N[2]);
     glBindBuffer(GL_UNIFORM_BUFFER,0);
 
+    quad_->draw();
     glBindBuffer(GL_UNIFORM_BUFFER, u_light_buffer);
     glBufferSubData(GL_UNIFORM_BUFFER, 0,                   4 * sizeof(GLfloat), &light_.position[0]);
     glBufferSubData(GL_UNIFORM_BUFFER, 4 * sizeof(GLfloat), 4 * sizeof(GLfloat), &light_.color[0]);
