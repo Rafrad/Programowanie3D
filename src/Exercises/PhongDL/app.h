@@ -21,7 +21,8 @@
 struct Light {
     glm::vec4 position;
     glm::vec4 color; 
-    glm::vec4 a;  
+    glm::vec4 a;
+    glm::vec4 ambient;
 };
 
 class SimpleShapeApplication : public xe::Application {
@@ -65,7 +66,7 @@ public:
     void set_quad(Quad* quad) { quad_ = quad; }
     Quad* quad() { return quad_; }
 
-    void set_light(glm::vec4 position, glm::vec4 color, glm::vec4 a) { light_.position = position; light_.color = color; light_.a = a; }
+    void set_light(glm::vec4 position, glm::vec4 color, glm::vec4 a, glm::vec4 ambient) { light_.position = position; light_.color = color; light_.a = a; light_.ambient = ambient; }
 private:
     GLuint vao_;
     GLuint u_pvm_buffer_;

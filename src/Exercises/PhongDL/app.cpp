@@ -65,7 +65,8 @@ void SimpleShapeApplication::init() {
     set_light(
         glm::vec4(),
         glm::vec4(1.0f, 1.0f, 1.0f, 0.0f),
-        glm::vec4()
+        glm::vec4(1.0f, 0.0f, 1.0f, 0.0f),
+        glm::vec4(0.7f, 0.7f, 0.7f, 0.0f)
     );
 
     glGenBuffers(1, &u_pvm_buffer_);
@@ -80,9 +81,10 @@ void SimpleShapeApplication::init() {
 
     glViewport(0, 0, w, h);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
+    
     glUseProgram(program);
 
     auto  u_diffuse_map_location = glGetUniformLocation(program,"diffuse_map");
@@ -95,11 +97,12 @@ void SimpleShapeApplication::init() {
 
 void SimpleShapeApplication::frame() {
     //pyramid_->draw();
+    quad_->draw();
     auto P = camera_->projection();
     auto VM = camera_->view();
     auto N = glm::transpose(glm::inverse(glm::mat3(VM)));
-    light_.position = VM * glm::vec4 (0.0f, 0.5f, 0.0f, 1.0f);
-
+    light_.position = VM * glm::vec4 (0.0f, 1.0f, 0.0f, 1.0f);
+    
     glBindBuffer(GL_UNIFORM_BUFFER,u_pvm_buffer_);
     glBufferSubData(GL_UNIFORM_BUFFER, 0,                                         sizeof(glm::mat4),   &P[0]);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4),                         sizeof(glm::mat4),   &VM[0]);
@@ -108,11 +111,11 @@ void SimpleShapeApplication::frame() {
     glBufferSubData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4) + 8 * sizeof(GLfloat), 3 * sizeof(GLfloat), &N[2]);
     glBindBuffer(GL_UNIFORM_BUFFER,0);
 
-    quad_->draw();
     glBindBuffer(GL_UNIFORM_BUFFER, u_light_buffer);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0,                   4 * sizeof(GLfloat), &light_.position[0]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 4 * sizeof(GLfloat), 4 * sizeof(GLfloat), &light_.color[0]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 8 * sizeof(GLfloat), 4 * sizeof(GLfloat), &light_.a[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0,                    4 * sizeof(GLfloat), &light_.position[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 4 * sizeof(GLfloat),  4 * sizeof(GLfloat), &light_.color[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 8 * sizeof(GLfloat),  4 * sizeof(GLfloat), &light_.a[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 12 * sizeof(GLfloat), 4 * sizeof(GLfloat), &light_.ambient[0]);
     glBindBuffer(GL_UNIFORM_BUFFER,0);
 }
 
