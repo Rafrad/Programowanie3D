@@ -66,7 +66,7 @@ void SimpleShapeApplication::init() {
         glm::vec4(),
         glm::vec4(1.0f, 1.0f, 1.0f, 0.0f),
         glm::vec4(1.0f, 0.0f, 1.0f, 0.0f),
-        glm::vec4(0.7f, 0.7f, 0.7f, 0.0f)
+        glm::vec4(0.2f, 0.2f, 0.2f, 0.0f)
     );
 
     glGenBuffers(1, &u_pvm_buffer_);
@@ -77,7 +77,7 @@ void SimpleShapeApplication::init() {
     glGenBuffers(1, &u_light_buffer);
     glBindBufferBase(GL_UNIFORM_BUFFER,1,u_light_buffer);
     glBindBuffer(GL_UNIFORM_BUFFER,u_light_buffer);
-    glBufferData(GL_UNIFORM_BUFFER, 4*3*sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, 4*4*sizeof(GLfloat), nullptr, GL_STATIC_DRAW);
 
     glViewport(0, 0, w, h);
     glEnable(GL_DEPTH_TEST);
