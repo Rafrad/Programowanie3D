@@ -18,6 +18,12 @@
 #include "pyramid.h"
 #include "quad.h"
 
+struct Light {
+    glm::vec4 position;
+    glm::vec4 color; 
+    glm::vec4 a;  
+};
+
 class SimpleShapeApplication : public xe::Application {
 public:
     SimpleShapeApplication(int width, int height, std::string title, int major = 4, int minor = 1) :
@@ -59,9 +65,13 @@ public:
     void set_quad(Quad* quad) { quad_ = quad; }
     Quad* quad() { return quad_; }
 
+    void set_light(glm::vec4 position, glm::vec4 color, glm::vec4 a) { light_.position = position; light_.color = color; light_.a = a; }
 private:
     GLuint vao_;
     GLuint u_pvm_buffer_;
+    GLuint u_light_buffer;
+
+    Light light_;
 
     Pyramid* pyramid_;
     Quad* quad_;

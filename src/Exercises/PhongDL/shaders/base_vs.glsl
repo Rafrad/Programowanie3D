@@ -10,8 +10,12 @@ layout(std140) uniform Matrix {
     mat3 N;
 };
 out vec2 vertex_texture;
+out vec3 vertex_normal_in_vs;
+out vec3 vertex_position_in_vs; 
 
 void main() {
     gl_Position = P*VM*a_vertex_position;
     vertex_texture = a_vertex_texture;
+    vertex_position_in_vs = (VM*a_vertex_position).xyz;
+    vertex_normal_in_vs = normalize(N*a_vertex_normal);
 }
