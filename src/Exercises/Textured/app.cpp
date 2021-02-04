@@ -57,6 +57,9 @@ void SimpleShapeApplication::init() {
     glGenBuffers(1, &u_pvm_buffer_);
     glBindBufferBase(GL_UNIFORM_BUFFER,0,u_pvm_buffer_);
 
+    // Buffor "wyrzucony do metody init"
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+
     glViewport(0, 0, w, h);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -73,12 +76,10 @@ void SimpleShapeApplication::init() {
 }
 
 void SimpleShapeApplication::frame() {
-    pyramid_->draw();
-
     auto PVM = camera_->projection()*camera_->view();
     glBindBuffer(GL_UNIFORM_BUFFER,u_pvm_buffer_);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
+    pyramid_->draw();
     glBindBuffer(GL_UNIFORM_BUFFER,0);
 }
 
